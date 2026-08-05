@@ -1,0 +1,66 @@
+using UnityEngine;
+
+namespace Limbus.Data
+{
+    public enum SinAttribute
+    {
+        None = 0,
+        Wrath = 1,
+        Lust = 2,
+        Sloth = 3,
+        Gluttony = 4,
+        Gloom = 5,
+        Pride = 6,
+        Envy = 7
+    }
+
+    public enum AttackType
+    {
+        None = 0,
+        Slash = 1,
+        Pierce = 2,
+        Blunt = 3
+    }
+
+    public enum DefenseType
+    {
+        None = 0,
+        Guard = 1,
+        Evade = 2,
+        Counter = 3
+    }
+
+    public enum CoinEffectTrigger
+    {
+        None = 0,
+        OnStartBattle = 1,
+        OnBeforeUse = 2,
+        OnUse = 3,
+        OnHit = 4,
+        OnCrit = 5,
+        OnClashWin = 6,
+        OnClashLose = 7,
+        OnEvadeSuccess = 8,
+        OnUnbreakableCoinHit = 9,
+        OnEndSkill = 10,
+        OnAllyClashWin = 11,
+        OnAllyAttack = 12,
+        OnAllyClashLose = 13,
+        OnAllyHit = 14
+    }
+
+    public enum KeyWordType
+    {
+        None = 0,
+        Burn = 1,
+        Bleed = 2,
+        Tremor = 3,
+        Rupture = 4,
+        Sinking = 5,
+        Poise = 6,
+        Charge = 7,
+
+        TremorBurst = 101,
+        SinkingDeluge = 102
+    }
+}
