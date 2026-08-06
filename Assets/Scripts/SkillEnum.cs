@@ -49,6 +49,14 @@ namespace Limbus.Data
         OnAllyHit = 14
     }
 
+    public enum CoinType
+    {
+        Normal = 0,
+        Unbreakable = 1,
+        Excision = 2,
+        Purple = 3
+    }
+
     public enum KeyWordType
     {
         None = 0,
