@@ -2,6 +2,14 @@ using UnityEngine;
 
 namespace Limbus.Data
 {
+    public enum SkillCategory
+    {
+        Active = 0,
+        Defense = 1,
+        Ego = 2,
+        EgoCorrosion = 3
+    }
+
     public enum SinAttribute
     {
         None = 0,
@@ -70,5 +78,34 @@ namespace Limbus.Data
 
         TremorBurst = 101,
         SinkingDeluge = 102
+    }
+
+    public enum EgoRiskLevel
+    {
+        None = 0,
+        ZAYIN = 1,
+        TETH = 2,
+        HE = 3,
+        WAW = 4,
+        ALEPH = 5
+    }
+
+    public enum ResourceConsumeTrigger
+    {
+        None = 0,
+        OnStartBattle = 1,
+        OnBeforeUse = 2,
+        OnUse = 3,
+        OnHit = 4,
+        OnCrit = 5,
+        OnClashWin = 6,
+        OnClashLose = 7,
+        OnEvadeSuccess = 8,
+        OnUnbreakableCoinHit = 9,
+        OnEndSkill = 10,
+        OnAllyClashWin = 11,
+        OnAllyAttack = 12,
+        OnAllyClashLose = 13,
+        OnAllyHit = 14
     }
 }
