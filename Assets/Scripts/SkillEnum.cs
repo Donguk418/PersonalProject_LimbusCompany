@@ -38,6 +38,14 @@ namespace Limbus.Data
         Counter = 3
     }
 
+    public enum TargetType
+    {
+        Enemy = 0,
+        Ally = 1,
+        Any = 2,
+        Self = 3
+    }
+
     public enum CoinEffectTrigger
     {
         None = 0,

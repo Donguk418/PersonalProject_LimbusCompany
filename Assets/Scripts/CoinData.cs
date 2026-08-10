@@ -24,7 +24,7 @@ namespace Limbus.Data
         [SerializeField] private int _coinPower;
         [SerializeField] private string _animationTriggerName;
         [SerializeField] private CoinType _coinType = CoinType.Normal;
-        [SerializeField] private List<CoinEffect> _coinEffects = new List<CoinEffect>();
+        [SerializeField] private List<CoinEffect> _coinEffects = new();
 
         public int CoinPower => _coinPower;
         public string AnimationTriggerName => _animationTriggerName;

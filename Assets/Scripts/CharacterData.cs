@@ -56,7 +56,7 @@ namespace Limbus.Data
         [SerializeField] private Sprite _characterPortrait;
 
         [Header("소속 및 특성 키워드")]
-        [SerializeField] private List<string> _factionKeywords = new List<string>();
+        [SerializeField] private List<string> _factionKeywords = new();
 
         [Header("기본 스탯 및 레벨별 성장 계수")]
         [Tooltip("현재 인격 레벨 상한")]
@@ -80,7 +80,7 @@ namespace Limbus.Data
         [SerializeField] private SanityConditionData _sanityCondition;
 
         [Header("보유 스킬 정보")]
-        [SerializeField] private List<SkillData> _skillList = new List<SkillData>();
+        [SerializeField] private List<SkillData> _skillList = new();
         [SerializeField] private SkillData _defenseSkill;
 
 
