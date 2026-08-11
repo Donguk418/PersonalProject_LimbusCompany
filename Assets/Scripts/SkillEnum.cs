@@ -116,4 +116,26 @@ namespace Limbus.Data
         OnAllyClashLose = 13,
         OnAllyHit = 14
     }
+
+    public enum PassiveType
+    {
+        IdentityBattle = 0,
+        IdentitySupport = 1,
+        Ego = 2
+    }
+
+    public enum PassiveConditionType
+    {
+        None = 0,
+        SinResonance = 1,
+        AbsouluteSinResonance = 2,
+        ResourceOwned = 3,
+        EgoUsed = 4
+    }
+
+    public enum PassiveDuration
+    {
+        CurrentTurn = 0,
+        EntireBattle = 1
+    }
 }
