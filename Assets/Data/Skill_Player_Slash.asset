@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3453147abf1582649a867f467c04b6eb, type: 3}
+  m_Name: Skill_Player_Slash
+  m_EditorClassIdentifier: Assembly-CSharp::Limbus.Data.SkillData
+  _skillId: 
+  _skillName: 
+  _skillIcon: {fileID: 0}
+  _skillNum: 1
+  _skillCategory: 0
+  _sinAttribute: 0
+  _attackType: 0
+  _targetType: 0
+  _basePower: 0
+  _resourceCost:
+    _resourceTrigger: 3
+    _hpCost: 0
+    _spCost: 0
+  _coins: []

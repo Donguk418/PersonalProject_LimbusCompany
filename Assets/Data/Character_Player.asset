@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8974797dee56b7a4da4e07f042172f44, type: 3}
+  m_Name: Character_Player
+  m_EditorClassIdentifier: Assembly-CSharp::Limbus.Data.CharacterData
+  _characterId: 
+  _characterName: 
+  _identityId: 
+  _identityName: 
+  _characterPortrait: {fileID: 0}
+  _factionKeywords: []
+  _maxLevel: 60
+  _baseMaxHp: 100
+  _hpGrowthRate: 10
+  _baseOffenseLevel: 10
+  _offenseGrowthRate: 1
+  _baseDefenseLevel: 10
+  _defenseGrowthRate: 1
+  _minSpeed: 2
+  _maxSpeed: 5
+  _attackResistances:
+    _slash: 1
+    _pierce: 1
+    _blunt: 1
+  _sanityCondition:
+    _maxSanity: 45
+    _minSanity: -45
+    _clashWinSpGain: 10
+    _killEnemySpGain: 10
+    _allyClashWinSpGain: 5
+    _clashLoseSpLoss: 10
+    _allyDeathSpLoss: 10
+  _skillList: []
+  _defenseSkill: {fileID: 0}
