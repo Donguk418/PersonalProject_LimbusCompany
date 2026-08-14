@@ -13,6 +13,17 @@ namespace Limbus.Data
         public float Slash => _slash;
         public float Pierce => _pierce;
         public float Blunt => _blunt;
+
+        public float GetResistance(AttackType attackType)
+        {
+            return attackType switch
+            {
+                AttackType.Slash => _slash,
+                AttackType.Pierce => _pierce,
+                AttackType.Blunt => _blunt,
+                _ => 1.0f
+            };
+        }
     }
 
     [Serializable]
@@ -34,6 +45,7 @@ namespace Limbus.Data
         public int MinSanity => _minSanity;
         public int ClashWinSpGain => _clashWinSpGain;
         public int KillEnemySpGain => _killEnemySpGain;
+        public int ClashLoseSpLoss => _clashLoseSpLoss;
         public int AllyDeathSpLoss => _allyDeathSpLoss;
     }
 
@@ -89,19 +101,13 @@ namespace Limbus.Data
         public string IdentityId => _identityId;
         public string IdentityName => _identityName;
         public Sprite CharacterPortrait => _characterPortrait;
-
         public IReadOnlyList<string> FactionKeywords => _factionKeywords;
-
         public int MinSpeed => _minSpeed;
         public int MaxSpeed => _maxSpeed;
-
         public AttackResistances AttackResistances => _attackResistances;
         public SanityConditionData SanityCondition => _sanityCondition;
-
         public IReadOnlyList<SkillData> SkillList => _skillList;
         public SkillData DefenseSkill => _defenseSkill;
-
-
         public int GetMaxHp(int level) => Mathf.RoundToInt(_baseMaxHp + (Mathf.Min(level, _maxLevel) - 1) * _hpGrowthRate);
         public int GetOffenseLevel(int level) => Mathf.RoundToInt(_baseOffenseLevel + (Mathf.Min(level, _maxLevel) - 1) * _offenseGrowthRate);
         public int GetDefenseLevel(int level) => Mathf.RoundToInt(_baseDefenseLevel + (Mathf.Min(level, _maxLevel) - 1) * _defenseGrowthRate);
