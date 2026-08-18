@@ -26,15 +26,7 @@ MonoBehaviour:
     _hpCost: 0
     _spCost: 0
   _coins:
-  - _coinPower: 2
-    _animationTriggerName: 
-    _coinType: 0
-    _coinEffects: []
-  - _coinPower: 2
-    _animationTriggerName: 
-    _coinType: 0
-    _coinEffects: []
-  - _coinPower: 2
+  - _coinPower: 5
     _animationTriggerName: 
     _coinType: 0
     _coinEffects: []
