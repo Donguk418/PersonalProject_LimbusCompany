@@ -17,12 +17,24 @@ MonoBehaviour:
   _skillIcon: {fileID: 0}
   _skillNum: 1
   _skillCategory: 0
-  _sinAttribute: 0
-  _attackType: 0
+  _sinAttribute: 3
+  _attackType: 1
   _targetType: 0
-  _basePower: 0
+  _basePower: 5
   _resourceCost:
     _resourceTrigger: 3
     _hpCost: 0
     _spCost: 0
-  _coins: []
+  _coins:
+  - _coinPower: 2
+    _animationTriggerName: 
+    _coinType: 0
+    _coinEffects: []
+  - _coinPower: 2
+    _animationTriggerName: 
+    _coinType: 0
+    _coinEffects: []
+  - _coinPower: 2
+    _animationTriggerName: 
+    _coinType: 0
+    _coinEffects: []

@@ -39,5 +39,6 @@ MonoBehaviour:
     _allyClashWinSpGain: 5
     _clashLoseSpLoss: 10
     _allyDeathSpLoss: 10
-  _skillList: []
+  _skillList:
+  - {fileID: 11400000, guid: 4bdd9ca5e04ec0e4b97f496addb8444e, type: 2}
   _defenseSkill: {fileID: 0}
