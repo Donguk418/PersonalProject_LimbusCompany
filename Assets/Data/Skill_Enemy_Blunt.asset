@@ -30,3 +30,7 @@ MonoBehaviour:
     _animationTriggerName: 
     _coinType: 0
     _coinEffects: []
+  - _coinPower: 5
+    _animationTriggerName: 
+    _coinType: 0
+    _coinEffects: []

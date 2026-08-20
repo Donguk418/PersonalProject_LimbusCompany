@@ -19,6 +19,9 @@ namespace Limbus.Runtime
         [Header("스킬 장착 상태")]
         [SerializeField] private List<SkillData> _equippedSkills = new();
 
+        [Header("상태 플래그")]
+        [SerializeField] private bool _isDead;
+
         public event Action<int, int> OnHpChanged;
         public event Action<int> OnSanityChanged;
         public event Action<int> OnDamageTaken;
@@ -33,7 +36,9 @@ namespace Limbus.Runtime
         public int DefenseLevel => _stat.DefenseLevel;
         public int CurrentSanity => _stat.CurrentSanity;
         public int CurrentSpeed => _stat.CurrentSpeed;
-        public float BonusCoinProbability
+        public bool IsDead => _isDead;
+        public event Action OnDead;
+        public float BonusCoinProbability 
         {
             get => _stat.BonusCoinProbability;
             set => _stat.BonusCoinProbability = value;
@@ -85,9 +90,18 @@ namespace Limbus.Runtime
 
         public void TakeDamage(int damage)
         {
+            if (_isDead) return;
+
             _stat.ModifyHp(-damage);
             OnHpChanged?.Invoke(_stat.CurrentHp, _stat.MaxHp);
             OnDamageTaken?.Invoke(damage);
+
+            if (_stat.CurrentHp <= 0)
+            {
+                _isDead = true;
+                OnDead?.Invoke();
+                Debug.Log($"{name} 사망 상태로 전환.");
+            }
         }
     }
 }

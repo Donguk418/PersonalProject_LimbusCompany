@@ -13,35 +13,35 @@ namespace Limbus.Runtime
         [SerializeField] private CharacterRuntime _enemyCharacter;
 
         [Header("전투 규칙 설정")]
-        [SerializeField] private int _maxClashCount = 99;                 // 최대 합 반복 제한 횟수
+        [SerializeField] private int _maxClashCount = 99;                  // 최대 합 반복 제한 횟수
 
         [Header("연출 딜레이 및 타이밍 설정 (초)")]
-        [SerializeField] private float _clashStepDuration = 1.0f;         // 합 1회당 힘겨루기 대치 시간
-        [SerializeField] private float _clashStepInterval = 0.2f;         // 다음 합 진행 전 인터벌
-        [SerializeField] private float _postClashFreezeDuration = 0.5f;   // 최종 합 종료 후 정적(Freeze) 시간
-        [SerializeField] private float _attackInterval = 0.8f;            // 일방 공격 코인 타격 간격
-        [SerializeField] private float _turnEndDelay = 0.8f;              // 턴 종료 후 유닛 복귀 전 대기 시간
+        [SerializeField] private float _clashStepDuration = 1.0f;          // 합 1회당 힘겨루기 대치 시간
+        [SerializeField] private float _clashStepInterval = 0.2f;          // 다음 합 진행 전 인터벌
+        [SerializeField] private float _postClashFreezeDuration = 0.5f;    // 최종 합 종료 후 정적(Freeze) 시간
+        [SerializeField] private float _attackInterval = 0.8f;             // 일방 공격 코인 타격 간격
+        [SerializeField] private float _turnEndDelay = 0.8f;               // 턴 종료 후 유닛 재배치 전 대기 시간
 
         [Header("이동 속도 및 배율 설정")]
-        [SerializeField] private float _moveSpeed = 10f;                  // 기본 이동 속도
-        [SerializeField] private float _attackDashSpeedMultiplier = 1.5f; // 일방 공격 진입 돌진 속도 배율
-        [SerializeField] private float _advanceSpeedMultiplier = 1.2f;    // 승자 파고들기 전진 속도 배율
-        [SerializeField] private float _drawRushSpeedMultiplier = 1.5f;   // 무승부 후 재돌진 속도 배율
+        [SerializeField] private float _moveSpeed = 10f;                   // 기본 이동 속도
+        [SerializeField] private float _attackDashSpeedMultiplier = 1.5f;  // 일방 공격 진입 돌진 속도 배율
+        [SerializeField] private float _advanceSpeedMultiplier = 1.2f;     // 승자 파고들기 전진 속도 배율
+        [SerializeField] private float _drawRushSpeedMultiplier = 1.5f;    // 무승부 후 재돌진 속도 배율
 
         [Header("거리 및 위치 오프셋 설정")]
-        [SerializeField] private float _clashDistance = 1.2f;             // 합 맞부딪힐 때의 간격
-        [SerializeField] private float _drawRecoilDistance = 1.2f;        // 무승부 시 서로 튕겨 나가는 반동 거리
-        [SerializeField] private float _knockbackDistance = 1.0f;         // 일반 합 패배 시 밀려나는 거리
-        [SerializeField] private float _finalKnockbackMultiplier = 1.8f;  // 최종 합 패배 시 크게 밀려나는 계수
-        [SerializeField] private float _oneSidedAttackOffset = 0.8f;      // 일방 공격 시 타깃과의 간격
+        [SerializeField] private float _clashDistance = 1.2f;              // 합 맞부딪힐 때의 간격
+        [SerializeField] private float _drawRecoilDistance = 1.2f;         // 무승부 시 서로 튕겨 나가는 반동 거리
+        [SerializeField] private float _knockbackDistance = 1.0f;          // 일반 합 패배 시 밀려나는 거리
+        [SerializeField] private float _finalKnockbackMultiplier = 1.8f;   // 최종 합 패배 시 크게 밀려나는 계수
+        [SerializeField] private float _oneSidedAttackOffset = 0.8f;       // 일방 공격 시 타깃과의 간격
 
         [Header("보간 시간 및 연출 세기 (초/강도)")]
-        [SerializeField] private float _knockbackDuration = 0.15f;        // 일반 합 넉백 보간 시간
-        [SerializeField] private float _finalKnockbackDuration = 0.2f;    // 최종 합 대형 넉백 보간 시간
-        [SerializeField] private float _drawRecoilDuration = 0.12f;       // 무승부 반동 보간 시간
-        [SerializeField] private float _drawPauseDuration = 0.1f;         // 무승부 반동 후 재돌진 전 멈춤 시간
-        [SerializeField] private float _shakeDuration = 0.15f;            // 피격 시 셰이크 지속 시간
-        [SerializeField] private float _shakeMagnitude = 0.15f;           // 피격 시 셰이크 강도
+        [SerializeField] private float _knockbackDuration = 0.15f;         // 일반 합 넉백 보간 시간
+        [SerializeField] private float _finalKnockbackDuration = 0.2f;     // 최종 합 대형 넉백 보간 시간
+        [SerializeField] private float _drawRecoilDuration = 0.12f;        // 무승부 반동 보간 시간
+        [SerializeField] private float _drawPauseDuration = 0.1f;          // 무승부 반동 후 재돌진 전 멈춤 시간
+        [SerializeField] private float _shakeDuration = 0.15f;             // 피격 시 셰이크 지속 시간
+        [SerializeField] private float _shakeMagnitude = 0.15f;            // 피격 시 셰이크 강도
 
         private Vector3 _playerOriginPos;
         private Vector3 _enemyOriginPos;
@@ -67,7 +67,7 @@ namespace Limbus.Runtime
 
             await UniTask.Delay(TimeSpan.FromSeconds(_turnEndDelay), cancellationToken: ct);
 
-            await EndTurnAndReturnPositionsAsync(ct);
+            EndTurnAndSnapPositions();
         }
 
         public async UniTask ProcessClashAsync(CharacterRuntime charA, CharacterRuntime charB, CancellationToken ct)
@@ -199,7 +199,7 @@ namespace Limbus.Runtime
 
                 ShakeAsync(loser.transform, _shakeDuration, _shakeMagnitude, ct).Forget();
 
-                if (loser.CurrentHp <= 0)
+                if (loser.IsDead)
                 {
                     Debug.Log($"{loser.name} 사망, 공격 종료.");
                     break;
@@ -211,21 +211,18 @@ namespace Limbus.Runtime
             Debug.Log("공격 종료.");
         }
 
-        public async UniTask EndTurnAndReturnPositionsAsync(CancellationToken ct)
+        public void EndTurnAndSnapPositions()
         {
-            Debug.Log("턴 종료, 살아있는 유닛 재배치.");
+            Debug.Log("턴 종료: 생존 유닛 즉시 원위치 배치.");
 
-            if (_playerCharacter.CurrentHp > 0 && _enemyCharacter.CurrentHp > 0)
+            if (_playerCharacter != null && !_playerCharacter.IsDead)
             {
-                await MoveToPositionsAsync(_playerCharacter, _playerOriginPos, _enemyCharacter, _enemyOriginPos, _moveSpeed, ct);
+                _playerCharacter.transform.position = _playerOriginPos;
             }
-            else if (_playerCharacter.CurrentHp > 0)
+
+            if (_enemyCharacter != null && !_enemyCharacter.IsDead)
             {
-                await MoveSingleAsync(_playerCharacter, _playerOriginPos, _moveSpeed, ct);
-            }
-            else if (_enemyCharacter.CurrentHp > 0)
-            {
-                await MoveSingleAsync(_enemyCharacter, _enemyOriginPos, _moveSpeed, ct);
+                _enemyCharacter.transform.position = _enemyOriginPos;
             }
         }
 
