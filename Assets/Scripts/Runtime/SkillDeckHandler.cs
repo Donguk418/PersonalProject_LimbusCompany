@@ -27,6 +27,7 @@ namespace Limbus.Runtime
 
         public event Action<int, SkillData> OnSlotChanged;
         public event Action OnDeckRefilled;
+        public event Action OnTurnSynced;
 
         public IReadOnlyList<SkillData> DrawPile => _drawPile;
         public IReadOnlyList<SkillData> DiscardPile => _discardPile;
@@ -225,6 +226,8 @@ namespace Limbus.Runtime
 
                 OnSlotChanged?.Invoke(1, _slottedSkills[1]);
             }
+
+            OnTurnSynced?.Invoke();
         }
 
         public bool IsBottomSlotDefense()                                                             // 하단 슬롯이 수비 스킬로 전환되어 있는지 확인
