@@ -25,6 +25,9 @@ namespace Limbus.Runtime
         [Header("상태 플래그")]
         [SerializeField] private bool _isDead;
 
+        [Header("유닛 보유 슬롯 개수 설정")]
+        [SerializeField] private int _baseSlotCount = 1; // 일반 유닛은 1, 단독 보스는 5~7 등
+
         public event Action<int, int> OnHpChanged;
         public event Action<int> OnSanityChanged;
         public event Action<int> OnDamageTaken;
@@ -106,6 +109,12 @@ namespace Limbus.Runtime
                 OnDead?.Invoke();
                 Debug.Log($"{name} 사망 상태로 전환.");
             }
+        }
+
+        public int BaseSlotCount                                     // 슬롯 개수
+        {
+            get => _baseSlotCount;
+            set => _baseSlotCount = Mathf.Max(1, value);
         }
     }
 }

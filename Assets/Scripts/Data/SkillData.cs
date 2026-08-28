@@ -57,6 +57,8 @@ namespace Limbus.Data
         [Header("코인 데이터")]
         [SerializeField] private List<CoinData> _coins = new();
 
+        [Header("적 AI 타깃팅 규칙")]
+        [SerializeField] private TargetingPriority _targetingPriority = TargetingPriority.Random;
 
         public string SkillId => _skillId;
         public string SkillName => _skillName;
@@ -74,5 +76,6 @@ namespace Limbus.Data
         //public int EgoResourceGainAmount => _egoResourceGainAmount;
         //public bool IsAssistSkill => _isAssistSkill;
         public IReadOnlyList<CoinData> Coins => _coins;
+        public TargetingPriority TargetingPriority => _targetingPriority;
     }
 }
