@@ -16,6 +16,9 @@ namespace Limbus.Runtime
         [Header("런타임 스탯")]
         [SerializeField] private CharacterStat _stat = new();
 
+        [Header("스킬 덱 시스템")]
+        [SerializeField] private SkillDeckHandler _deckHandler = new();
+
         [Header("스킬 장착 상태")]
         [SerializeField] private List<SkillData> _equippedSkills = new();
 
@@ -28,6 +31,7 @@ namespace Limbus.Runtime
         public event Action<int> OnSpeedChanged;
 
         public CharacterData CharacterData => _characterData;
+        public SkillDeckHandler DeckHandler => _deckHandler;
         public CharacterStat Stat => _stat;
         public int CurrentLevel => _stat.CurrentLevel;
         public int CurrentHp => _stat.CurrentHp;
