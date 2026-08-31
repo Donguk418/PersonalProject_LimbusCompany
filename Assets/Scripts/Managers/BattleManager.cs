@@ -89,7 +89,6 @@ namespace Limbus.Runtime
 
                 if (isClash)
                 {
-                    Debug.Log($"합 발생 - {currentSlot.Owner.name}(속도 {currentSlot.Speed}) vs {targetSlot.Owner.name}(속도 {targetSlot.Speed})");
                     _actedSlots.Add(currentSlot);
                     _actedSlots.Add(targetSlot);
 
@@ -110,7 +109,7 @@ namespace Limbus.Runtime
 
                 await UniTask.Delay(TimeSpan.FromSeconds(_actionInterval), cancellationToken: ct);
             }
-
+            Debug.Log($"턴 종료.");
             await UniTask.Delay(TimeSpan.FromSeconds(_turnEndDelay), cancellationToken: ct);
             _turnManager.PrepareNewTurn();
         }
@@ -119,7 +118,7 @@ namespace Limbus.Runtime
         {
             if (skillA == null || skillB == null)
             {
-                Debug.LogError($"<color=red>[스킬 누락 발생]</color> {charA.name} 스킬: {(skillA != null ? skillA.SkillName : "null")}, {charB.name} 스킬: {(skillB != null ? skillB.SkillName : "null")}");
+                Debug.LogError($"스킬 누락 발생 : {charA.name} 스킬: {(skillA != null ? skillA.SkillName : "null")}, {charB.name} 스킬: {(skillB != null ? skillB.SkillName : "null")}");
                 return;
             }
 
@@ -135,6 +134,8 @@ namespace Limbus.Runtime
             int coinsB = skillB.Coins.Count;
             int clashCount = 0;
 
+            Debug.Log($"합 발생 - {charA.name}({skillA.SkillName}, 코인 {coinsA}개) VS {charB.name}({skillB.SkillName}, 코인 {coinsB}개)");
+
             while (coinsA > 0 && coinsB > 0 && clashCount < _maxClashCount)
             {
                 clashCount++;
@@ -145,11 +146,15 @@ namespace Limbus.Runtime
                 int powerA = ClashResolver.CalculateSkillPower(skillA, coinsA, charA.CurrentSanity, offenseDiffA, charA.BonusCoinProbability);
                 int powerB = ClashResolver.CalculateSkillPower(skillB, coinsB, charB.CurrentSanity, offenseDiffB, charB.BonusCoinProbability);
 
+                Debug.Log($"{charA.name} 최종 위력 : {powerA} (코인 {coinsA}개) VS {charB.name} 최종 위력 : {powerB} (코인 {coinsB}개)");
+
                 await UniTask.Delay(TimeSpan.FromSeconds(_clashStepDuration), cancellationToken: ct);
 
                 if (powerA > powerB)
                 {
                     coinsB--;
+                    Debug.Log($"{charA.name} 합 승리. {charB.name} 코인 파괴 - 남은 코인: {coinsB}개");
+
                     Vector3 pushDir = aIsLeft ? Vector3.right : Vector3.left;
                     if (coinsB > 0)
                     {
@@ -159,6 +164,8 @@ namespace Limbus.Runtime
                 else if (powerB > powerA)
                 {
                     coinsA--;
+                    Debug.Log($"{charB.name} 합 승리. {charA.name} 코인 파괴 - 남은 코인: {coinsB}개");
+
                     Vector3 pushDir = aIsLeft ? Vector3.left : Vector3.right;
                     if (coinsA > 0)
                     {
@@ -167,6 +174,7 @@ namespace Limbus.Runtime
                 }
                 else
                 {
+                    Debug.Log($"무승부. 합 재실행.");
                     await ApplyClashDrawAsync(charA, charB, _drawRecoilDistance, _moveSpeed * _drawRushSpeedMultiplier, ct);
                 }
 
@@ -177,6 +185,8 @@ namespace Limbus.Runtime
             CharacterRuntime loser = coinsA > 0 ? charB : charA;
             SkillData winningSkill = coinsA > 0 ? skillA : skillB;
             int remainingCoins = coinsA > 0 ? coinsA : coinsB;
+
+            Debug.Log($"합 최종 승리: {winner.name}. 스킬의 남은 코인 {remainingCoins}개로 {loser.name}에게 일방 공격.");
 
             Vector3 finalBlowDir = (loser.transform.position.x >= winner.transform.position.x) ? Vector3.right : Vector3.left;
             await ApplyBigKnockbackAsync(loser, finalBlowDir * (_knockbackDistance * _finalKnockbackMultiplier), ct);
@@ -195,7 +205,7 @@ namespace Limbus.Runtime
         {
             if (skill == null || defender == null || defender.IsDead)
             {
-                Debug.LogError($"<color=red>[일방공격 스킬 누락/대상 사망]</color> 공격자: {attacker.name}, 스킬: {(skill != null ? skill.SkillName : "null")}");
+                Debug.LogError($"일방공격 스킬 누락/대상 사망. 공격자: {attacker.name}, 스킬: {(skill != null ? skill.SkillName : "null")}");
                 return;
             }
 
@@ -204,6 +214,7 @@ namespace Limbus.Runtime
 
             await MoveSingleAsync(attacker, targetPos, _moveSpeed * _attackDashSpeedMultiplier, ct);
 
+            Debug.Log($"{attacker.name} - {skill.SkillName}로 일방 공격.");
             await ExecuteAttackCoinsAsync(attacker, skill, defender, skill.Coins.Count, 0, ct);
         }
 
@@ -211,10 +222,15 @@ namespace Limbus.Runtime
         {
             int currentRunningPower = skill.BasePower;
             bool hasBonus = attacker.BonusCoinProbability != 0f;
+            int totalDamage = 0;
 
             for (int i = 0; i < coinCount; i++)
             {
-                if (defender.IsDead) break;
+                if (defender.IsDead)
+                {
+                    Debug.Log($"스킬 공격 대상 사망으로 공격 종료.");
+                    break;
+                }
 
                 bool isHeads = ClashResolver.RollCoin(attacker.CurrentSanity, attacker.BonusCoinProbability, hasBonus);
 
@@ -239,10 +255,14 @@ namespace Limbus.Runtime
                 );
 
                 defender.TakeDamage(singleDamage);
+                totalDamage += singleDamage;
+                string coinStr = isHeads ? "앞면" : "뒷면";
+                Debug.Log($"코인 {i + 1}타 적중. {coinStr} 현재 위력 : {currentRunningPower} | 피해량 : {singleDamage} | {defender.name} 잔여 HP : {defender.CurrentHp}/{defender.MaxHp}");
                 ShakeAsync(defender.transform, _shakeDuration, _shakeMagnitude, ct).Forget();
 
                 await UniTask.Delay(TimeSpan.FromSeconds(_attackInterval), cancellationToken: ct);
             }
+            Debug.Log($"공격 종료. (누적 피해: {totalDamage})");
         }
 
 

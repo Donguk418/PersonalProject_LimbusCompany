@@ -11,148 +11,109 @@ namespace Limbus.Runtime
         [SerializeField] private List<CharacterRuntime> _playerUnits = new();
         [SerializeField] private List<CharacterRuntime> _enemyUnits = new();
 
-        [Header("적 및 아군 스킬 슬롯 목록")]
+        [Header("적 및 아군 스킬 슬롯 목록 (BattleInfo)")]
         [SerializeField] private List<BattleInfo> _playerSlots = new();
         [SerializeField] private List<BattleInfo> _enemySlots = new();
 
         [Header("진형 배치 기준점(속도가 가장 빠른 유닛) 및 간격")]
-        [SerializeField] private Vector3 _playerStartPos = new(-13f, 0f, 0f);                     // 속도가 가장 빠른 아군 위치 기준점
-        [SerializeField] private Vector3 _enemyStartPos = new(13f, 0f, 0f);                       // 속도가 가장 빠른 적 위치 기준점
+        [SerializeField] private Vector3 _playerStartPos = new(-13f, 0f, 0f);                            // 속도가 가장 빠른 아군 위치 기준점
+        [SerializeField] private Vector3 _enemyStartPos = new(13f, 0f, 0f);                              // 속도가 가장 빠른 적 위치 기준점
         [SerializeField] private float _xSpacing = 1.6f;
         [SerializeField] private float _yOffset = 1.5f;
 
         public IReadOnlyList<BattleInfo> PlayerSlots => _playerSlots;
         public IReadOnlyList<BattleInfo> EnemySlots => _enemySlots;
 
-        public event Action OnTurnPrepared;                                                      // 유닛 정렬 및 슬롯 배치가 끝났을 때 호출되는 이벤트
-
-        public void SetupBattle(List<CharacterRuntime> players, List<CharacterRuntime> enemies)
+        private void Start()
         {
-            _playerUnits = players ?? new List<CharacterRuntime>();
-            _enemyUnits = enemies ?? new List<CharacterRuntime>();
-
-            _playerSlots.Clear();
-            _enemySlots.Clear();
-
             PrepareNewTurn();
         }
 
         [ContextMenu("턴 시작, 속도 주사위 롤 및 속도 순으로 유닛 위치 정렬")]
         public void PrepareNewTurn()
         {
-            _playerSlots.RemoveAll(slot => slot.Owner == null || slot.Owner.IsDead);           // 사망한 아군 유닛 슬롯 제거
-            _enemySlots.RemoveAll(slot => slot.Owner == null || slot.Owner.IsDead);            // 사망한 적 유닛 슬롯 제거
-
             _playerSlots.Clear();
             _enemySlots.Clear();
 
+            _playerUnits.RemoveAll(unit => unit == null || unit.IsDead);                                   // 아군, 적 사망한 유닛 체크 및 슬롯 제거
+            _enemyUnits.RemoveAll(unit => unit == null || unit.IsDead);
+
             foreach (var unit in _playerUnits)
             {
-                unit.DeckHandler.OnTurnStarted();
-
-                for (int i = 0; i < unit.BaseSlotCount; i++)
+                if (unit.DeckHandler == null || unit.EquippedSkills.Count == 0)
                 {
-                    var slot = new BattleInfo(unit);
-                    slot.RollSpeed();
-                    _playerSlots.Add(slot);
+                    unit.InitializeCharacter();
                 }
             }
 
             foreach (var unit in _enemyUnits)
             {
-                unit.DeckHandler.OnTurnStarted();
-
-                for (int i = 0; i < unit.BaseSlotCount; i++)
+                if (unit.DeckHandler == null || unit.EquippedSkills.Count == 0)
                 {
-                    var slot = new BattleInfo(unit);
-                    slot.RollSpeed();                                                             // 스킬 슬롯을 여러 개 가진 적일 경우, 스킬 슬롯마다 독립된 속도값 부여
-                    _enemySlots.Add(slot);
+                    unit.InitializeCharacter();
                 }
             }
 
-            _playerSlots.Sort((a, b) => b.Speed.CompareTo(a.Speed));                              // 속도가 빠른 순으로 좌->우 내림차순 정렬
-            _enemySlots.Sort((a, b) => b.Speed.CompareTo(a.Speed));                               // 속도가 빠른 순으로 우->좌 내림차순 정렬
+            GenerateSlots(_playerUnits, _playerSlots);
+            GenerateSlots(_enemyUnits, _enemySlots);
 
-            ApplyFormation();
+            _playerSlots.Sort((a, b) => b.Speed.CompareTo(a.Speed));                        // 속도 순으로 슬롯 내림차순 정렬
+            _enemySlots.Sort((a, b) => b.Speed.CompareTo(a.Speed));
 
- 
-            foreach (var enemySlot in _enemySlots)                                                // 턴 시작 시, 슬롯별 스킬 타게팅 조건에 맞춰 아군 슬롯 선 타게팅
+            ApplyFormation(_playerSlots, _playerStartPos, true);                            // 속도 순으로 유닛 위치 내림차순 정렬
+            ApplyFormation(_enemySlots, _enemyStartPos, false);
+
+            foreach (var enemySlot in _enemySlots)                                          // 적이 턴 시작과 동시에 아군 슬롯을 무작위로 지정
             {
                 SkillData skill = enemySlot.GetSelectedSkill();
                 TargetingPriority priority = skill != null ? skill.TargetingPriority : TargetingPriority.Random;
                 enemySlot.TargetSlot = EnemyTargetingSolver.PickTarget(enemySlot, _playerSlots, priority);
             }
 
-            foreach (var playerSlot in _playerSlots)                                               // 테스트용 아군 스킬 적에게 랜덤 타게팅
+            foreach (var playerSlot in _playerSlots)                                                               // 테스트용 : 아군 슬롯이 무작위 적 스킬을 지정
             {
                 playerSlot.TargetSlot = EnemyTargetingSolver.PickTarget(playerSlot, _enemySlots, TargetingPriority.Random);
             }
 
-            DebugLogTurnOrder();
-
-            OnTurnPrepared?.Invoke();
+            Debug.Log($"아군 슬롯 {_playerSlots.Count}개, 적 슬롯 {_enemySlots.Count}개 생성 및 타겟 지정 완료");
         }
 
-        private void ApplyFormation()
+        private void GenerateSlots(List<CharacterRuntime> units, List<BattleInfo> slotList)
         {
-            for (int i = 0; i < _playerSlots.Count; i++)                                        // 아군 배치
+            foreach (var unit in units)
             {
-                var unit = _playerUnits[i];
-                float x = _playerStartPos.x + (i * _xSpacing);
-                float y = (i % 2 == 0) ? _playerStartPos.y : _playerStartPos.y - _yOffset;      // 짝수 인덱스(속도 순서 1,3,5,7번째)는 상단, 홀수 인덱스(속도 순서 2,4,6번째)는 하단
-                float z = _playerStartPos.z + (y * 0.01f);
-
-                unit.transform.position = new(x, y, z);
-            }
-
-            for (int i = 0; i < _enemySlots.Count; i++)                                         // 적 배치
-            {
-                var unit = _enemyUnits[i];
-                float x = _enemyStartPos.x - (i * _xSpacing);
-                float y = (i % 2 == 0) ? _enemyStartPos.y : _enemyStartPos.y - _yOffset;        // 짝수 인덱스(속도 순서 1,3,5,7번째)는 상단, 홀수 인덱스(속도 순서 2,4,6번째)는 하단
-                float z = _enemyStartPos.z + (y * 0.01f);
-
-                unit.transform.position = new(x, y, z);
+                int slotCount = unit.BaseSlotCount;
+                for (int i = 0; i < slotCount; i++)
+                {
+                    var battleInfo = new BattleInfo(unit);                               // 슬롯이 여러 개일 경우, 각 슬롯이 독립된 속도값을 가짐
+                    battleInfo.RollSpeed();
+                    slotList.Add(battleInfo);
+                }
             }
         }
 
-        private void DebugLogTurnOrder()
+        private void ApplyFormation(List<BattleInfo> slotList, Vector3 startPos, bool isPlayer)
         {
-            Debug.Log("아군 슬롯 및 위치 속도 순으로 배치.");
-            for (int i = 0; i < _playerSlots.Count; i++)
-            {
-                var slot = _playerSlots[i];
-                Debug.Log($"아군 {i}번 슬롯 (좌측 {i + 1}번째) {slot.Owner.name} - 속도: {slot.Speed}");
-            }
+            HashSet<CharacterRuntime> placedUnits = new();
+            int placeIndex = 0;
 
-            Debug.Log("적 슬롯 및 위치 속도 순으로 배치.");
-            for (int i = _enemySlots.Count - 1; i >= 0; i--)
+            foreach (var slot in slotList)
             {
-                var slot = _enemySlots[i];
-                int fromRight = _enemySlots.Count - i;
-                string targetName = slot.TargetSlot != null ? $"{slot.TargetSlot.Owner.name}(속도 {slot.TargetSlot.Speed})" : "없음";
-                string skillName = slot.GetSelectedSkill() != null ? slot.GetSelectedSkill().SkillName : "스킬 없음";
-                TargetingPriority priority = slot.GetSelectedSkill() != null ? slot.GetSelectedSkill().TargetingPriority : TargetingPriority.Random;
-                Debug.Log($"적 {i}번 슬롯 (우측 {fromRight}번째) {slot.Owner.name} - 속도: {slot.Speed}");
-            }
-        }
+                var unit = slot.Owner;
+                if (unit == null || placedUnits.Contains(unit)) continue;
 
-        private void OnDrawGizmosSelected()                                                     // 씬 뷰에서 배치 미리보기
-        {
-            Gizmos.color = Color.cyan;
-            for (int i = 0; i < 7; i++)
-            {
-                float x = _playerStartPos.x + (i * _xSpacing);
-                float y = (i % 2 == 0) ? _playerStartPos.y : _playerStartPos.y - _yOffset;
-                Gizmos.DrawWireSphere(new Vector3(x, y, _playerStartPos.z), 0.3f);
-            }
+                placedUnits.Add(unit);
 
-            Gizmos.color = Color.red;
-            for (int i = 0; i < 7; i++)
-            {
-                float x = _enemyStartPos.x - (i * _xSpacing);
-                float y = (i % 2 == 0) ? _enemyStartPos.y : _enemyStartPos.y - _yOffset;
-                Gizmos.DrawWireSphere(new Vector3(x, y, _enemyStartPos.z), 0.3f);
+                float xPos = isPlayer
+                    ? startPos.x + (placeIndex * _xSpacing)
+                    : startPos.x - (placeIndex * _xSpacing);
+
+                float yPos = (placeIndex % 2 == 0)
+                    ? startPos.y
+                    : startPos.y - _yOffset;
+
+                unit.transform.position = new Vector3(xPos, yPos, startPos.z);
+                placeIndex++;
             }
         }
     }
