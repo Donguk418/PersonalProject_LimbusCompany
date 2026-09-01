@@ -14,7 +14,7 @@ namespace Limbus.Runtime
 
         public CharacterRuntime Owner => _owner;
         public int Speed => _speed;
-        public int SelectedSkillIndex => _selectedSkillIndex;
+        public int SelectedSkillIndex { get => _selectedSkillIndex; set => _selectedSkillIndex = value; }
         public BattleInfo TargetSlot { get => _targetSlot; set => _targetSlot = value; }
 
         public BattleInfo(CharacterRuntime owner)
