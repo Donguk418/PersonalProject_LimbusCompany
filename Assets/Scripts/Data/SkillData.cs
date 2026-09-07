@@ -60,6 +60,9 @@ namespace Limbus.Data
         [Header("적 AI 타깃팅 규칙")]
         [SerializeField] private TargetingPriority _targetingPriority = TargetingPriority.Random;
 
+        [Header("UI 리소스")]
+        [SerializeField] private Sprite _skillSprite;
+
         public string SkillId => _skillId;
         public string SkillName => _skillName;
         public Sprite SkillIcon => _skillIcon;
@@ -77,5 +80,6 @@ namespace Limbus.Data
         //public bool IsAssistSkill => _isAssistSkill;
         public IReadOnlyList<CoinData> Coins => _coins;
         public TargetingPriority TargetingPriority => _targetingPriority;
+        public Sprite SkillSprite => _skillSprite;
     }
 }
